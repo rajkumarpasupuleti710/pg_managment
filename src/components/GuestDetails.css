@@ -1,0 +1,409 @@
+.guest-details-page {
+  min-height: 100vh;
+  background: rgba(0,0,0,0.92);
+  color: #fff;
+  padding: 15px;
+  position: relative;
+  display: flex;
+}
+
+.vertical-nav {
+  width: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 15px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  height: calc(50vh - 30px);
+  position: fixed;
+  left: 15px;
+}
+
+.nav-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  padding: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.nav-item i {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.nav-item span {
+  font-size: 10px;
+}
+
+.nav-item:hover, .nav-item.active {
+  color: #fff;
+}
+
+.main-content {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+.guest-details-nav {
+  position: fixed;
+  top: 15px;
+  left: 80px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 15px 50px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guest-details-nav h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.guest-details-content {
+  padding-top: 80px;
+  display: grid;
+  grid-template-columns: minmax(500px, 800px) minmax(400px, 600px);
+  gap: 20px;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding-right: 15px;
+}
+
+.guest-info-section, .bills-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.guest-info-section h2, .bills-section h2 {
+  margin: 0 0 24px 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #fff;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.guest-info-section h2::after, .bills-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(87, 86, 230, 0.8), rgba(87, 86, 230, 0.2));
+  border-radius: 2px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.info-item {
+  background: rgba(255, 255, 255, 0.07);
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  border-color: rgba(87, 86, 230, 0.4);
+}
+
+.info-item label {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.info-item span {
+  display: block;
+  font-size: 1.1rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.due-amount {
+  color: rgb(255, 99, 71) !important;
+}
+
+.bills-section {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.pending-bills, .payment-history {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.pending-bills h2, .payment-history h2 {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  padding-left: 5px;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 15px 20px;
+  background: rgba(31, 35, 47, 0.95);
+  color: #fff;
+  font-weight: 500;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 15px 20px;
+  background: rgba(31, 35, 47, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: center;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.table-row:hover {
+  background: rgba(31, 35, 47, 0.5);
+}
+
+.bills-table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.pay-btn {
+  padding: 8px 16px;
+  background: rgba(46, 213, 115, 0.2);
+  border: 1px solid rgba(46, 213, 115, 0.4);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pay-btn:hover {
+  background: rgba(46, 213, 115, 0.3);
+  transform: translateY(-2px);
+}
+
+.paid-status {
+  color: #4CAF50;
+  font-weight: 500;
+  padding: 6px 12px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.no-bills {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 30px;
+  background: rgba(31, 35, 47, 0.3);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+/* Loading and Error States */
+.guest-details-loading,
+.guest-details-error {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: #5756e6;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .guest-details-content {
+    grid-template-columns: 1fr;
+    padding: 100px 20px 20px;
+  }
+
+  .guest-info-section,
+  .bills-section {
+    height: auto;
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .guest-details-nav {
+    width: 50%;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vertical-nav {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+.error-message,
+.success-message {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 8px;
+  z-index: 1000;
+  animation: slideDown 0.3s ease-out;
+}
+
+.error-message {
+  background: rgba(255, 99, 71, 0.2);
+  border: 1px solid rgba(255, 99, 71, 0.4);
+  color: rgb(255, 99, 71);
+}
+
+.success-message {
+  background: rgba(76, 175, 80, 0.9);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bottom-navigation {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.back-to-dashboard-btn {
+  padding: 12px 24px;
+  background: rgba(87, 86, 230, 0.2);
+  border: 1px solid rgba(87, 86, 230, 0.4);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-to-dashboard-btn:hover {
+  background: rgba(87, 86, 230, 0.3);
+  transform: translateY(-2px);
+}
+
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+/* Add back button styling */
+.back-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: rgba(31, 35, 47, 0.95);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: rgba(31, 35, 47, 1);
+  transform: translateY(-2px);
+}
+
+.back-button::before {
+  content: '←';
+  font-size: 18px;
+}
+
+.pay-button {
+  background: rgba(87, 86, 230, 0.2);
+  color: #fff;
+  border: 1px solid rgba(87, 86, 230, 0.4);
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pay-button:hover {
+  background: rgba(87, 86, 230, 0.3);
+  transform: translateY(-1px);
+} 
