@@ -1,0 +1,59 @@
+{
+  "navigation": {
+    "rooms": "कमरे",
+    "guests": "मेहमान",
+    "bills": "बिल",
+    "backToDashboard": "डैशबोर्ड पर वापस जाएं"
+  },
+  "rooms": {
+    "title": "कमरे का विवरण",
+    "addNewRoom": "नया कमरा जोड़ें",
+    "columns": {
+      "roomNumber": "कमरा नंबर",
+      "roomShare": "कमरा शेयर",
+      "price": "कीमत",
+      "vacancies": "रिक्तियां",
+      "actions": "कार्रवाई"
+    },
+    "actions": {
+      "edit": "संपादित करें",
+      "view": "देखें",
+      "addGuest": "मेहमान जोड़ें",
+      "vacate": "कमरा खाली करें"
+    }
+  },
+  "guests": {
+    "title": "मेहमान विवरण",
+    "noGuests": "अभी तक कोई मेहमान नहीं जोड़ा गया",
+    "columns": {
+      "name": "नाम",
+      "room": "कमरा",
+      "phone": "फोन",
+      "joinDate": "शामिल होने की तिथि",
+      "dueAmount": "बकाया राशि",
+      "nextPayDate": "अगली भुगतान तिथि",
+      "actions": "कार्रवाई"
+    }
+  },
+  "bills": {
+    "title": "बिल",
+    "totalUnpaid": "कुल अवैतनिक",
+    "totalPaid": "कुल भुगतान किया",
+    "pendingBills": "लंबित बिल",
+    "paidBills": "भुगतान किए गए बिल",
+    "noPendingBills": "कोई लंबित बिल नहीं",
+    "noPaidBills": "कोई भुगतान किया गया बिल नहीं",
+    "columns": {
+      "guestName": "मेहमान का नाम",
+      "room": "कमरा",
+      "amount": "राशि",
+      "month": "महीना",
+      "action": "कार्रवाई",
+      "status": "स्थिति"
+    },
+    "actions": {
+      "payNow": "अभी भुगतान करें",
+      "paid": "भुगतान किया"
+    }
+  }
+} 

@@ -1,0 +1,59 @@
+{
+  "navigation": {
+    "rooms": "Rooms",
+    "guests": "Guests",
+    "bills": "Bills",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "rooms": {
+    "title": "Room Details",
+    "addNewRoom": "Add New Room",
+    "columns": {
+      "roomNumber": "ROOM NUMBER",
+      "roomShare": "ROOM SHARE",
+      "price": "PRICE",
+      "vacancies": "VACANCIES",
+      "actions": "ACTIONS"
+    },
+    "actions": {
+      "edit": "Edit",
+      "view": "View",
+      "addGuest": "Add Guest",
+      "vacate": "Vacate"
+    }
+  },
+  "guests": {
+    "title": "Guest Details",
+    "noGuests": "No guests added yet",
+    "columns": {
+      "name": "Name",
+      "room": "Room",
+      "phone": "Phone",
+      "joinDate": "Join Date",
+      "dueAmount": "Due Amount",
+      "nextPayDate": "Next Pay Date",
+      "actions": "Actions"
+    }
+  },
+  "bills": {
+    "title": "Bills",
+    "totalUnpaid": "Total Unpaid",
+    "totalPaid": "Total Paid",
+    "pendingBills": "Pending Bills",
+    "paidBills": "Paid Bills",
+    "noPendingBills": "No pending bills",
+    "noPaidBills": "No paid bills",
+    "columns": {
+      "guestName": "Guest Name",
+      "room": "Room",
+      "amount": "Amount",
+      "month": "Month",
+      "action": "Action",
+      "status": "Status"
+    },
+    "actions": {
+      "payNow": "Pay Now",
+      "paid": "Paid"
+    }
+  }
+} 

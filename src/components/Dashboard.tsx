@@ -50,7 +50,6 @@ const Dashboard = () => {
   const [showPgDetails, setShowPgDetails] = useState(false);
   const [pgDetailsData, setPgDetailsData] = useState<PgDetails | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{ id: number } | null>(null);
 
   // Fetch PGs on component mount
   useEffect(() => {
@@ -62,6 +61,14 @@ const Dashboard = () => {
             'Authorization': token ? `Bearer ${token}` : '',
           },
         });
+        
+        if (response.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem('accessToken');
+          navigate('/login');
+          return;
+        }
+        
         const data = await response.json();
         if (data.status === 'success') {
           setPgs(data.pgs);
@@ -72,28 +79,7 @@ const Dashboard = () => {
       }
     };
     fetchPGs();
-  }, []);
-
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${BACKEND_URL}/current_user`, {
-          headers: {
-            'Authorization': token ? `Bearer ${token}` : '',
-          },
-        });
-        const data = await response.json();
-        if (data.status === 'success') {
-          setCurrentUser(data.user);
-        }
-      } catch (err) {
-        console.error('Error fetching current user:', err);
-        setError('Failed to fetch current user');
-      }
-    };
-    fetchCurrentUser();
-  }, []);
+  }, [navigate]);
 
   const handlePgClick = (pg: PG) => {
     setSelectedPg(pg);

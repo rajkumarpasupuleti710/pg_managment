@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './PgDetails.css';
+import LanguageSelector from './LanguageSelector';
+import Modal from 'react-modal';
+
 
 interface RoomDetail {
   id: number;
@@ -20,6 +24,7 @@ interface GuestDetail {
   date_of_join: string;
   due: number;
   pay_date: string;
+  active: boolean;
 }
 
 interface PgDetailsData {
@@ -85,6 +90,7 @@ interface AllBillsResponse {
 const BACKEND_URL = 'http://localhost:8000';
 
 const PgDetails = () => {
+  const { t } = useTranslation();
   const { pgId } = useParams();
   const navigate = useNavigate();
   const [pgDetailsData, setPgDetailsData] = useState<PgDetailsData | null>(null);
@@ -115,6 +121,11 @@ const PgDetails = () => {
     pg_id: Number(pgId),
     date_of_join: new Date().toISOString().split('T')[0]
   });
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editRoom, setEditRoom] = useState<RoomDetail | null>(null);
+  // Confirmation modal state for bill payments
+  const [confirmPayModalOpen, setConfirmPayModalOpen] = useState(false);
+  const [billToPay, setBillToPay] = useState<BillDetail | null>(null);
 
   const handleAddRoom = async (e: React.FormEvent, addAnother: boolean) => {
     e.preventDefault();
@@ -307,6 +318,10 @@ const PgDetails = () => {
   }, [pgId]);
 
   const handleAddGuestClick = (roomId: number) => {
+    // Clear any previous status messages so they don't appear in the new form
+    setSuccessMessage('');
+    setError('');
+
     setSelectedRoomId(roomId);
     setGuestDetails(prev => ({ ...prev, room_id: roomId }));
     setShowGuestForm(true);
@@ -355,6 +370,102 @@ const PgDetails = () => {
     }
   };
 
+  // Open and close confirmation modal for paying a bill
+  const openConfirmPayModal = (bill: BillDetail) => {
+    setBillToPay(bill);
+    setConfirmPayModalOpen(true);
+  };
+
+  const closeConfirmPayModal = () => {
+    setConfirmPayModalOpen(false);
+    setBillToPay(null);
+  };
+
+  const handleEditRoom = (room: RoomDetail) => {
+    setRoomDetails({
+      pg_id: Number(pgId),
+      room_id: room.room_id,
+      room_share: room.room_share,
+      room_price: room.room_price
+    });
+    setShowRoomForm(true);
+  };
+
+  const handleViewRoom = (room: RoomDetail) => {
+    // You can implement room viewing logic here
+    // For now, we'll just log the room details
+    console.log('Viewing room:', room);
+  };
+
+  const handleVacateGuest = async (guestId: number) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${BACKEND_URL}/guest/vacate`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
+        body: JSON.stringify({ guest_id: guestId, pg_id: Number(pgId) }),
+      });
+
+      const data = await response.json();
+      if (data.status === 'success') {
+        // refresh guests and rooms
+        fetchGuests();
+        fetchPgDetails();
+        setSuccessMessage(data.message);
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setError(data.message || 'Failed to vacate guest');
+        setTimeout(() => setError(''), 3000);
+      }
+    } catch (err) {
+      console.error('Error vacating guest:', err);
+      setError('Failed to vacate guest');
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  const openEditModal = (room: RoomDetail) => {
+    // Clear any lingering messages before opening the edit modal
+    setSuccessMessage('');
+    setError('');
+
+    setEditRoom(room);
+    setEditModalOpen(true);
+  };
+
+  const closeEditModal = () => setEditModalOpen(false);
+
+  const submitRoomUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editRoom) return;
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch(`${BACKEND_URL}/room/update`, {
+        method: 'PUT',
+        headers: { 'Content-Type':'application/json','Authorization': token?`Bearer ${token}`:'' },
+        body: JSON.stringify({
+          pg_id: Number(pgId),
+          room_id: editRoom.room_id,
+          room_share: editRoom.room_share,
+          room_price: editRoom.room_price
+        })
+      });
+      const data = await res.json();
+      if (data.status==='success'){
+        setSuccessMessage('Room updated');
+        fetchPgDetails();
+        closeEditModal();
+      } else {
+        setError(data.message||'Update failed');
+      }
+    }catch(err){
+      setError('Update failed');
+    }
+  };
+
   if (loading) {
     return (
       <div className="pg-details-loading">
@@ -385,58 +496,60 @@ const PgDetails = () => {
   const renderRoomsSection = () => (
     <div className="rooms-section">
       <div className="rooms-header">
-        <h2>Room Details</h2>
-        <button 
+        <h2>{t('rooms.title')}</h2>
+        <button
           className="add-room-button"
-          onClick={() => setShowRoomForm(true)}
-        >
-          + Add New Room
+          onClick={() => {
+            // Clear messages before opening the add-room form
+            setSuccessMessage('');
+            setError('');
+            setShowRoomForm(true);
+          }}>
+          {t('rooms.addNewRoom')}
         </button>
       </div>
-
-      {pgDetailsData.room_details.length > 0 ? (
-        <div className="rooms-table">
-          <div className="table-header table-row">
-            <div className="table-cell">Room Number</div>
-            <div className="table-cell">Room Share</div>
-            <div className="table-cell">Price</div>
-            <div className="table-cell">Vacancies</div>
-            <div className="table-cell">Actions</div>
-          </div>
-          {[...pgDetailsData.room_details]
-            .sort((a, b) => a.room_id - b.room_id)
-            .map((room) => (
-              <div key={room.id} className="table-row">
-                <div className="table-cell highlight">{room.room_id}</div>
-                <div className="table-cell highlight">{room.room_share}</div>
-                <div className="table-cell">₹{room.room_price}</div>
-                <div className="table-cell highlight">{room.vacancies}</div>
-                <div className="table-cell room-actions">
-                  <button className="edit-button">Edit</button>
-                  <button className="view-button">View</button>
-                  {room.vacancies > 0 && (
-                    <button 
-                      className="add-guest-button"
-                      onClick={() => handleAddGuestClick(room.room_id)}
-                    >
-                      Add Guest
+      
+      <div className="rooms-table-container">
+        <table className="rooms-table">
+          <thead>
+            <tr>
+              <th>{t('rooms.columns.roomNumber')}</th>
+              <th>{t('rooms.columns.roomShare')}</th>
+              <th>{t('rooms.columns.price')}</th>
+              <th>{t('rooms.columns.vacancies')}</th>
+              <th>{t('rooms.columns.actions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...(pgDetailsData?.room_details || [])]
+              .sort((a, b) => a.room_id - b.room_id)
+              .map((room) => (
+                <tr key={room.room_id}>
+                  <td>{room.room_id}</td>
+                  <td>{room.room_share}</td>
+                  <td>₹{room.room_price}</td>
+                  <td>{room.vacancies}</td>
+                  <td className="room-actions">
+                    <button className="edit-button" onClick={() => openEditModal(room)}>
+                      {t('rooms.actions.edit')}
                     </button>
-                  )}
-                </div>
-              </div>
+                    <button className="view-button" onClick={() => handleViewRoom(room)}>
+                      {t('rooms.actions.view')}
+                    </button>
+                    {room.vacancies > 0 && (
+                      <button 
+                        className="add-guest-button"
+                        onClick={() => handleAddGuestClick(room.room_id)}
+                      >
+                        {t('rooms.actions.addGuest')}
+                      </button>
+                    )}
+                  </td>
+                </tr>
             ))}
-        </div>
-      ) : (
-        <div className="no-rooms-message">
-          <p>No rooms added yet</p>
-          <button 
-            className="add-first-room-button"
-            onClick={() => setShowRoomForm(true)}
-          >
-            + Add Your First Room
-          </button>
-        </div>
-      )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 
@@ -466,13 +579,14 @@ const PgDetails = () => {
               <div className="table-cell">₹{guest.due}</div>
               <div className="table-cell">{formatDate(guest.pay_date)}</div>
               <div className="table-cell guest-actions">
-                <button 
-                  className="view-button"
-                  onClick={() => navigate(`/pg/${pgId}/guest/${guest.id}`)}
-                >
-                  View
+                {guest.active && (
+                  <button className="vacate-button" onClick={() => handleVacateGuest(guest.id)}>
+                    {t('guests.actions.vacate', 'Vacate')}
+                  </button>
+                )}
+                <button className="view-button" onClick={() => navigate(`/pg/${pgId}/guest/${guest.id}`)}>
+                  {t('rooms.actions.view')}
                 </button>
-                <button className="pay-button">Pay Due</button>
               </div>
             </div>
           ))}
@@ -522,7 +636,7 @@ const PgDetails = () => {
                       <td>{bill.months}</td>
                       <td>
                         <button
-                          onClick={() => handlePayBill(bill.bill_id)}
+                          onClick={() => openConfirmPayModal(bill)}
                           className="pay-btn"
                         >
                           Pay Now
@@ -577,18 +691,28 @@ const PgDetails = () => {
 
   return (
     <div className="pg-details-page">
+      <LanguageSelector />
+      <button 
+        className="back-to-dashboard-btn"
+        onClick={() => navigate('/dashboard')}
+        style={{ cursor: 'pointer', zIndex: 1000 }}
+      >
+        <span>←</span>
+        <span>{t('navigation.backToDashboard')}</span>
+      </button>
+      
       <nav className="vertical-nav">
         <a href="/dashboard" className="nav-item active">
           <i>🏠</i>
-          <span>Home</span>
+          <span>{t('navigation.rooms')}</span>
         </a>
         <a href="/profile" className="nav-item">
           <i>👤</i>
-          <span>Profile</span>
+          <span>{t('navigation.guests')}</span>
         </a>
         <a href="/settings" className="nav-item">
           <i>⚙️</i>
-          <span>Settings</span>
+          <span>{t('navigation.bills')}</span>
         </a>
         <a href="/bag" className="nav-item">
           <i>💼</i>
@@ -781,14 +905,82 @@ const PgDetails = () => {
         </div>
       )}
 
-      <div className="bottom-navigation">
-        <button 
-          className="back-to-dashboard-btn" 
-          onClick={() => navigate('/dashboard')}
-        >
-          ← Back to Dashboard
-        </button>
-      </div>
+      <Modal
+        isOpen={editModalOpen}
+        onRequestClose={closeEditModal}
+        ariaHideApp={false}
+        className="modal-content"
+        overlayClassName="modal-overlay"
+      >
+        {editRoom && (
+          <div>
+            <h2>Edit Room Details</h2>
+            {error && <p className="error">{error}</p>}
+            {successMessage && <p className="success">{successMessage}</p>}
+            <form onSubmit={submitRoomUpdate}>
+              <div className="form-group">
+                <label>Room Share (1-4):</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="4"
+                  value={editRoom.room_share}
+                  onChange={e => setEditRoom({ ...editRoom, room_share: Number(e.target.value) })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Room Price:</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editRoom.room_price}
+                  onChange={e => setEditRoom({ ...editRoom, room_price: Number(e.target.value) })}
+                  required
+                />
+              </div>
+              <div className="button-group">
+                <button type="button" onClick={closeEditModal} className="cancel-btn">
+                  Cancel
+                </button>
+                <button type="submit" className="save-close-btn">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </Modal>
+
+      {/* Confirm Pay Bill Modal */}
+      <Modal
+        isOpen={confirmPayModalOpen}
+        onRequestClose={closeConfirmPayModal}
+        ariaHideApp={false}
+        className="modal-content"
+        overlayClassName="modal-overlay"
+      >
+        {billToPay && (
+          <div>
+            <h2>Confirm Payment</h2>
+            <p style={{color: 'red'}}>Are you sure you want to mark payment of ₹{billToPay.amount} for {billToPay.guest_name}?</p>
+            <div className="button-group">
+              <button className="cancel-btn" onClick={closeConfirmPayModal}>Cancel</button>
+              <button
+                className="save-close-btn"
+                onClick={() => {
+                  if (billToPay) {
+                    handlePayBill(billToPay.bill_id);
+                    closeConfirmPayModal();
+                  }
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
